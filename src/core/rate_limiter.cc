@@ -106,6 +106,12 @@ RateLimiter::UnregisterModel(const TritonModel* model)
     RETURN_IF_ERROR(resource_manager_->UpdateResourceLimits());
   }
 
+  return Status::Success;
+}
+
+Status
+RateLimiter::UnregisterPayloadQueue(const TritonModel* model)
+{
   if (payload_queues_.find(model) != payload_queues_.end()) {
     payload_queues_.erase(model);
   }

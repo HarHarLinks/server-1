@@ -307,13 +307,13 @@ TritonModel::TritonModel(
 
 TritonModel::~TritonModel()
 {
+  // Unregister itself from the rate limiter
+  server_->GetRateLimiter()->UnregisterModel(this);
+
   // Explicitly delete/finalize all model instances before finalizing
   // the model itself.
   instances_.clear();
   passive_instances_.clear();
-
-  // Unregister itself from the rate limiter
-  server_->GetRateLimiter()->UnregisterModel(this);
 
   // Model finalization is optional... The TRITONBACKEND_Model
   // object is this TritonModel object.
@@ -322,6 +322,9 @@ TritonModel::~TritonModel()
         backend_->ModelFiniFn()(reinterpret_cast<TRITONBACKEND_Model*>(this)),
         "failed finalizing model");
   }
+
+  // Remove PayloadQueue corresponding to the model within rate limiter.
+  server_->GetRateLimiter()->UnregisterPayloadQueue(this);
 }
 
 extern "C" {

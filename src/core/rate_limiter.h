@@ -82,9 +82,19 @@ class RateLimiter {
       const RateLimiterConfig& rate_limiter_config);
 
   /// Remove model from the set of models being managed by the rate limiter.
+  /// Note: Needs to be called before any of the TritonModelInstance objects
+  /// of the model are destroyed.
   /// \param model The pointer to TritonModel object to be removed.
   /// \return Status object indicating success or failure.
   Status UnregisterModel(const TritonModel* model);
+
+  /// Removes the PayloadQueue entry for the given model from the rate limiter.
+  /// Note: Needs to be called once all the TritonModelInstance objects of the
+  /// model are destroyed.
+  /// \param model The pointer to TritonModel object whose PayloadQueue is to
+  /// be removed.
+  /// \return Status object indicating success or failure.
+  Status UnregisterPayloadQueue(const TritonModel* model);
 
   /// Returns true if there is a payload slot available for the given model.
   /// \param model The pointer to TritonModel object to be removed.
